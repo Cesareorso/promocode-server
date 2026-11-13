@@ -16,16 +16,16 @@ function generatePromocode() {
 exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
     'Content-Type': 'application/json'
   };
   
-  const method = event.httpMethod;
-  
-  if (method === 'OPTIONS') {
+  if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
   
-  if (method === 'POST') {
+  if (event.httpMethod === 'POST') {
     try {
       const body = JSON.parse(event.body || '{}');
       const { Mail, Name } = body;
@@ -61,7 +61,7 @@ exports.handler = async (event, context) => {
     }
   }
   
-  if (method === 'GET') {
+  if (event.httpMethod === 'GET') {
     return {
       statusCode: 200,
       headers,
