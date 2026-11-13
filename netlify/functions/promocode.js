@@ -13,18 +13,21 @@ function generatePromocode() {
   return promocode;
 }
 
-exports.handler = async (event, context) => {
+module.exports = async function(event, context) {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Content-Type': 'application/json'
   };
   
-  if (event.httpMethod === 'OPTIONS') {
+  const method = event.httpMethod || event.requestContext.httpMethod || event.request.method;
+  
+  // OPTIONS - CORS preflight
+  if (method === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
   
-  // Webhook от Tilda
-  if (event.httpMethod === 'POST') {
+  // POST - Webhook от Tilda
+  if (method === 'POST') {
     try {
       const body = JSON.parse(event.body || '{}');
       const { Mail, Name } = body;
@@ -41,7 +44,7 @@ exports.handler = async (event, context) => {
         createdAt: new Date().toISOString()
       });
       
-      console.log('✅ Промокод создан:', Mail, promocode);
+      console.log('✅ Промокод:', Mail, promocode);
       
       return {
         statusCode: 200,
@@ -60,8 +63,8 @@ exports.handler = async (event, context) => {
     }
   }
   
-  // Тест - GET запрос
-  if (event.httpMethod === 'GET') {
+  // GET - Тест
+  if (method === 'GET') {
     return {
       statusCode: 200,
       headers,
